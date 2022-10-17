@@ -3,7 +3,7 @@ import CerrarBtn from "../img/cerrar.svg";
 import useForm from "../hooks/useForm";
 import validateFormModal from "../validate/validateFormModal";
 import Mensaje from "./Mensaje";
-import { generarId } from "../helpers";
+import { formatearFecha, generarId } from "../helpers";
 
 const Modal = ({
   setModal,
@@ -34,6 +34,7 @@ const Modal = ({
   function addGasto() {
     const gastosForm = values;
     gastosForm.id = generarId();
+    gastosForm.fecha = formatearFecha(new Date());
     console.log(gastosForm);
     setGastos([...gastos, gastosForm]);
     console.log(gastos);
@@ -93,11 +94,11 @@ const Modal = ({
             <option value="">-- Seleccione --</option>
             <option value="ahorro">Ahorro</option>
             <option value="comida">Comida</option>
-            <option value="casa">casa</option>
-            <option value="gastos">gastos</option>
-            <option value="ocio">ocio</option>
-            <option value="salud">salud</option>
-            <option value="suscripciones">suscripciones</option>
+            <option value="casa">Casa</option>
+            <option value="gastos">Gastos</option>
+            <option value="ocio">Ocio</option>
+            <option value="salud">Salud</option>
+            <option value="suscripciones">Suscripciones</option>
           </select>
         </div>
 
