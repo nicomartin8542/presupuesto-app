@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import IconoNuevoGasto from "./img/nuevo-gasto.svg";
 import Header from "./components/Header";
 import Modal from "./components/Modal";
@@ -10,6 +10,7 @@ function App() {
   const [modal, setModal] = useState(false);
   const [animarModal, setAnimarModal] = useState(false);
   const [gastos, setGastos] = useState([]);
+  const [gastoEditar, setGastoEditar] = useState({});
 
   const handleNuevoGasto = () => {
     setModal(true);
@@ -19,11 +20,20 @@ function App() {
     }, 500);
   };
 
+  useEffect(() => {
+    gastoEditar.id && handleNuevoGasto();
+  }, [gastoEditar]);
+
+  const eliminarGasto = (id) => {
+    const gastosElininado = gastos.filter((g) => g.id !== id);
+    setGastos(gastosElininado);
+  };
+
   return (
     <div className={modal ? "fijar" : ""}>
       <Header
-        presupuesto={presupuesto}
         gastos={gastos}
+        presupuesto={presupuesto}
         setPresupuesto={setPresupuesto}
         isvalidPresupuesto={isvalidPresupuesto}
         setIsvalidPresupuesto={setIsvalidPresupuesto}
@@ -32,7 +42,12 @@ function App() {
       {isvalidPresupuesto && (
         <>
           <main>
-            <ListadoGastos gastos={gastos} />
+            <ListadoGastos
+              gastos={gastos}
+              setGastos={setGastos}
+              setGastoEditar={setGastoEditar}
+              eliminarGasto={eliminarGasto}
+            />
           </main>
           <div className="nuevo-gasto">
             <img
@@ -51,6 +66,8 @@ function App() {
           animarModal={animarModal}
           setGastos={setGastos}
           gastos={gastos}
+          gastoEditar={gastoEditar}
+          setGastoEditar={setGastoEditar}
         />
       )}
     </div>

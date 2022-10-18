@@ -33,7 +33,14 @@ const useForm = (initialState = {}, validate, fn) => {
     setValues(initialState);
   };
 
-  return [values, error, handleInputChange, handleFormSubmit, resetForm];
+  return [
+    values,
+    setValues,
+    error,
+    handleInputChange,
+    handleFormSubmit,
+    resetForm,
+  ];
 };
 
 export default useForm;

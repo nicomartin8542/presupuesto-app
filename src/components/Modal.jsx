@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CerrarBtn from "../img/cerrar.svg";
 import useForm from "../hooks/useForm";
 import validateFormModal from "../validate/validateFormModal";
@@ -11,33 +11,49 @@ const Modal = ({
   setAnimarModal,
   setGastos,
   gastos,
+  gastoEditar,
+  setGastoEditar,
 }) => {
-  const [values, error, handleInputChange, handleFormSubmit] = useForm(
-    {
-      nombre: "",
-      cantidad: 0,
-      categoria: "",
-    },
+  const [values, setValues, error, handleInputChange, handleFormSubmit] =
+    useForm(
+      {
+        nombre: "",
+        cantidad: 0,
+        categoria: "",
+      },
 
-    validateFormModal,
-    addGasto
-  );
+      validateFormModal,
+      addGasto
+    );
+
+  useEffect(() => {
+    gastoEditar.id && setValues(gastoEditar);
+  }, []);
 
   const ocultarModal = () => {
     setAnimarModal(false);
 
     setTimeout(() => {
       setModal(false);
+      gastoEditar.id && setGastoEditar({});
     }, 500);
   };
 
   function addGasto() {
     const gastosForm = values;
-    gastosForm.id = generarId();
-    gastosForm.fecha = formatearFecha(new Date());
-    console.log(gastosForm);
-    setGastos([...gastos, gastosForm]);
-    console.log(gastos);
+    let gastosEditado = [];
+
+    //Pregunto si esta en modo editar.
+    if (gastoEditar.id) {
+      gastosEditado = gastos.map((gasto) =>
+        gasto.id === gastosForm.id ? gastosForm : gasto
+      );
+      setGastos(gastosEditado);
+    } else {
+      gastosForm.id = generarId();
+      gastosForm.fecha = formatearFecha(new Date());
+      setGastos([...gastos, gastosForm]);
+    }
     ocultarModal();
   }
 
@@ -56,7 +72,7 @@ const Modal = ({
         onSubmit={handleFormSubmit}
         className={`formulario ${animarModal ? "animar" : "cerrar"} `}
       >
-        <legend>Nuevo Gasto</legend>
+        <legend>{gastoEditar.id ? "Editar Gasto" : "Nuevo Gasto"}</legend>
         {error.msg && <Mensaje tipo="error">{error.msg}</Mensaje>}
 
         <div className="campo">
@@ -66,7 +82,7 @@ const Modal = ({
             name="nombre"
             id="nombre"
             value={nombre}
-            onChange={handleInputChange}
+            onChange={(e) => handleInputChange(e)}
             placeholder="Ingrese el nombre"
           />
         </div>
@@ -78,7 +94,7 @@ const Modal = ({
             name="cantidad"
             id="cantidad"
             value={cantidad}
-            onChange={handleInputChange}
+            onChange={(e) => handleInputChange(e)}
             placeholder="Ingrese el nombre"
           />
         </div>
@@ -89,7 +105,7 @@ const Modal = ({
             id="categoria"
             name="categoria"
             value={categoria}
-            onChange={handleInputChange}
+            onChange={(e) => handleInputChange(e)}
           >
             <option value="">-- Seleccione --</option>
             <option value="ahorro">Ahorro</option>
@@ -102,7 +118,7 @@ const Modal = ({
           </select>
         </div>
 
-        <input type="submit" value="Gasto" />
+        <input type="submit" value={gastoEditar.id ? "Editar" : "Guardar"} />
       </form>
     </div>
   );
