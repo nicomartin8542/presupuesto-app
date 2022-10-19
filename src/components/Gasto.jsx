@@ -26,7 +26,7 @@ const disccionarioIconos = {
   suscripciones: Iconosuscripciones,
 };
 
-const Gasto = ({ gasto, setGastoEditar, eliminarGasto, i }) => {
+const Gasto = ({ gasto, setGastoEditar, eliminarGasto }) => {
   const { categoria, nombre, cantidad, id, fecha } = gasto;
 
   const leadingActions = () => (
@@ -37,17 +37,17 @@ const Gasto = ({ gasto, setGastoEditar, eliminarGasto, i }) => {
 
   const trailingActions = () => (
     <TrailingActions>
-      <SwipeAction onClick={() => preguntarEliminar()} destructive={true}>
+      <SwipeAction onClick={() => eliminarGasto(id)} destructive={true}>
         Eliminar
       </SwipeAction>
     </TrailingActions>
   );
 
-  const preguntarEliminar = () => {
-    if (window.confirm("Esta por eliminar un gasto. ¿Desea continuar?")) {
-      eliminarGasto(id);
-    }
-  };
+  // const preguntarEliminar = () => {
+  //   if (window.confirm("Esta por eliminar un gasto. ¿Desea continuar?")) {
+  //     eliminarGasto(id);
+  //   }
+  // };
 
   return (
     <SwipeableList>

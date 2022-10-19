@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Gasto from "./Gasto";
 
 const ListadoGastos = ({
@@ -15,7 +15,6 @@ const ListadoGastos = ({
           key={i}
           gasto={gasto}
           setGastoEditar={setGastoEditar}
-          gastos={gastos}
           setGastos={setGastos}
           eliminarGasto={eliminarGasto}
         />
