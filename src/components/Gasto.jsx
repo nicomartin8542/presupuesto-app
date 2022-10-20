@@ -37,17 +37,9 @@ const Gasto = ({ gasto, setGastoEditar, eliminarGasto }) => {
 
   const trailingActions = () => (
     <TrailingActions>
-      <SwipeAction onClick={() => eliminarGasto(id)} destructive={true}>
-        Eliminar
-      </SwipeAction>
+      <SwipeAction onClick={() => eliminarGasto(id)}>Eliminar</SwipeAction>
     </TrailingActions>
   );
-
-  // const preguntarEliminar = () => {
-  //   if (window.confirm("Esta por eliminar un gasto. ¿Desea continuar?")) {
-  //     eliminarGasto(id);
-  //   }
-  // };
 
   return (
     <SwipeableList>
