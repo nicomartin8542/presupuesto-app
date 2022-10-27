@@ -34,7 +34,7 @@ function App() {
       const gastosFiltro =
         filtro !== ""
           ? gastos.filter((g) => g.categoria === filtro)
-          : JSON.parse(localStorage.getItem("gastos") || []);
+          : JSON.parse(localStorage.getItem("gastos")) || [];
       return gastosFiltro;
     };
     setGastosFiltro(verificarFiltro());
