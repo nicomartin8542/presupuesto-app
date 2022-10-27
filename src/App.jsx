@@ -1,66 +1,114 @@
-import React, {useState, useEffect} from "react";
-import Pregunta from "./components/Pregtunta";
-import Formulario from "./components/Formulario";
-import Listado from "./components/Listado";
-import ControlPresupuesto from "./components/ControlPresupuesto";
+import { useEffect, useState } from "react";
+import IconoNuevoGasto from "./img/nuevo-gasto.svg";
+import Header from "./components/Header";
+import Modal from "./components/Modal";
+import ListadoGastos from "./components/ListadoGastos";
+import Filtros from "./components/Filtros";
 
 function App() {
-	const [presupuesto, addPresupuesto] = useState(0);
-	const [restante, addRestante] = useState(0);
-	const [mostrarPretunga, updateMostrarP] = useState(true);
-	const [gastos, addGastos] = useState([]);
-	const [gasto, addGastoForm] = useState({
-		name: "",
-		cant: 0,
-		id: 0,
-	});
-	const [altGasto, updateAltGasto] = useState(false);
+  const [presupuesto, setPresupuesto] = useState(
+    Number(localStorage.getItem("presupuesto")) ?? 0
+  );
+  const [isvalidPresupuesto, setIsvalidPresupuesto] = useState(false);
+  const [modal, setModal] = useState(false);
+  const [animarModal, setAnimarModal] = useState(false);
+  const [gastos, setGastos] = useState(
+    localStorage.getItem("gastos")
+      ? JSON.parse(localStorage.getItem("gastos"))
+      : []
+  );
+  const [gastoEditar, setGastoEditar] = useState({});
+  const [filtro, setFiltro] = useState("");
+  const [gastosFiltro, setGastosFiltro] = useState(gastos);
 
-	useEffect(() => {
-		if (altGasto) {
-			addGastos([...gastos, gasto]);
-		}
+  const handleNuevoGasto = () => {
+    setModal(true);
 
-		const calcularRestante = restante - gasto.cant;
-		addRestante(calcularRestante);
+    setTimeout(() => {
+      setAnimarModal(true);
+    }, 500);
+  };
 
-		updateAltGasto(false);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [gasto]);
+  useEffect(() => {
+    const verificarFiltro = () => {
+      const gastosFiltro =
+        filtro !== ""
+          ? gastos.filter((g) => g.categoria === filtro)
+          : JSON.parse(localStorage.getItem("gastos") ?? []);
+      return gastosFiltro;
+    };
+    setGastosFiltro(verificarFiltro());
+  }, [filtro]);
 
-	return (
-		<div className="container">
-			<header>
-				<h1>Gasto semanal</h1>
-				<div className="contenido-principal contenido">
-					{/* Carga componente condicional */}
-					{mostrarPretunga ? (
-						<Pregunta
-							addPresupuesto={addPresupuesto}
-							addRestante={addRestante}
-							updateMostrarP={updateMostrarP}
-						/>
-					) : (
-						<div className="row">
-							<div className="one-half column">
-								<Formulario
-									addGasto={addGastoForm}
-									updateAltGasto={updateAltGasto}
-								/>
-							</div>
-							<div className="one-half column">
-								<Listado gastos={gastos} />
-								<ControlPresupuesto
-									presupuesto={presupuesto}
-									restante={restante}
-								/>
-							</div>
-						</div>
-					)}
-				</div>
-			</header>
-		</div>
-	);
+  useEffect(() => {
+    gastoEditar.id && handleNuevoGasto();
+  }, [gastoEditar]);
+
+  useEffect(() => {
+    localStorage.setItem("presupuesto", presupuesto ?? 0);
+  }, [presupuesto]);
+
+  useEffect(() => {
+    localStorage.setItem("gastos", JSON.stringify(gastos) ?? []);
+    setGastosFiltro(gastos);
+  }, [gastos]);
+
+  useEffect(() => {
+    const presupuestoStorage = Number(localStorage.getItem("presupuesto") ?? 0);
+    presupuestoStorage > 0 && setIsvalidPresupuesto(true);
+  }, []);
+
+  const eliminarGasto = (id) => {
+    const gastosElininado = gastos.filter((g) => g.id !== id);
+    setGastos(gastosElininado);
+  };
+
+  return (
+    <div className={modal ? "fijar" : ""}>
+      <Header
+        gastos={gastosFiltro}
+        setGastos={setGastos}
+        presupuesto={presupuesto}
+        setPresupuesto={setPresupuesto}
+        isvalidPresupuesto={isvalidPresupuesto}
+        setIsvalidPresupuesto={setIsvalidPresupuesto}
+      />
+
+      {isvalidPresupuesto && (
+        <>
+          <main>
+            <Filtros filtro={filtro} setFiltro={setFiltro} />
+            <ListadoGastos
+              gastos={gastosFiltro}
+              setGastos={setGastos}
+              setGastoEditar={setGastoEditar}
+              eliminarGasto={eliminarGasto}
+              filtro={filtro}
+            />
+          </main>
+          <div className="nuevo-gasto">
+            <img
+              src={IconoNuevoGasto}
+              alt="Alta nuevo gasto"
+              onClick={() => handleNuevoGasto()}
+            />
+          </div>
+        </>
+      )}
+
+      {modal && (
+        <Modal
+          setModal={setModal}
+          setAnimarModal={setAnimarModal}
+          animarModal={animarModal}
+          setGastos={setGastos}
+          gastos={gastos}
+          gastoEditar={gastoEditar}
+          setGastoEditar={setGastoEditar}
+        />
+      )}
+    </div>
+  );
 }
 
 export default App;
